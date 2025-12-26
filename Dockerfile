@@ -22,6 +22,14 @@ COPY .mvn/ .mvn/
 # re-download packages.
 RUN --mount=type=bind,source=pom.xml,target=pom.xml \
     --mount=type=cache,target=/root/.m2 ./mvnw dependency:go-offline -DskipTests
+	
+	# ---------- TEST STAGE ----------
+FROM eclipse-temurin:21-jdk-jammy AS test
+WORKDIR /app
+COPY pom.xml .
+RUN mvn -B dependency:go-offline
+COPY src ./src
+RUN mvn test
 
 ################################################################################
 
